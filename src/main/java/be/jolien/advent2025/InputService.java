@@ -1,4 +1,109 @@
 package be.jolien.advent2025;
 
+import be.jolien.advent2025.models.Dial;
+import be.jolien.advent2025.models.PowerBank;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
 class InputService {
+    private final InputClient inputClient;
+    private final InputParser inputParser;
+    private final IdChecker idChecker;
+
+    InputService(InputClient inputClient,
+                 InputParser inputParser,
+                 IdChecker idChecker) {
+        this.inputClient = inputClient;
+        this.inputParser = inputParser;
+        this.idChecker = idChecker;
+    }
+
+    List<String> getLinesByEnterFromUrl(String url){
+        String rawText = inputClient.fetchRawText(url);
+        return inputParser.parseToListByEnter(rawText);
+    }
+
+    List<String> getLinesByCommaFromUrl(String url){
+        String rawText = inputClient.fetchRawText(url);
+        return inputParser.parseToListByComma(rawText);
+    }
+
+    int getSolutionDayOnePartOne(){
+        var commands = this.getLinesByEnterFromUrl("https://adventofcode.com/2025/day/1/input");
+        var dial = new Dial(100);
+        var solution = 0;
+
+        for (String command : commands) {
+            if(command.isBlank()) continue;
+
+            var direction = command.charAt(0);
+            var value = Integer.parseInt(command.substring(1));
+
+            dial.move(direction, value);
+            if(dial.getCurrentPosition() == 0){
+                solution++;
+            }
+        }
+        return solution;
+    }
+
+    int getSolutionDayOnePartTwo(){
+        var commands = this.getLinesByEnterFromUrl("https://adventofcode.com/2025/day/1/input");
+        var dial = new Dial(100);
+        var solution = 0;
+
+        for (String command : commands) {
+            if(command.isBlank()) continue;
+
+            var direction = command.charAt(0);
+            var value = Integer.parseInt(command.substring(1));
+
+            solution += dial.moveAndCountAllZeros(direction, value);
+        }
+        return solution;
+    }
+
+    long getSolutionDayTwoPartOne(){
+        var commands = this.getLinesByCommaFromUrl("https://adventofcode.com/2025/day/2/input");
+        long solution = 0;
+        for (String command : commands) {
+            if(command.isBlank()) continue;
+
+            var parts = command.split("-");
+            var start = parts[0].trim();
+            var end = parts[1].trim();
+
+            solution += idChecker.sumOfDoubleNumbersInHalfFrom(start, end);
+        }
+        return solution;
+    }
+
+    long getSolutionDayTwoPartTwo(){
+        var commands = this.getLinesByCommaFromUrl("https://adventofcode.com/2025/day/2/input");
+        long solution = 0;
+        for (String command : commands) {
+            if(command.isBlank()) continue;
+
+            var parts = command.split("-");
+            var start = parts[0].trim();
+            var end = parts[1].trim();
+
+            solution += idChecker.sumOfRepetition(start, end);
+        }
+        return solution;
+    }
+
+    long getSolutionDayThree(int batteriesToSwitchOn){
+        var powerbanks = this.getLinesByEnterFromUrl("https://adventofcode.com/2025/day/3/input");
+        long solution = 0;
+        for(var bank : powerbanks){
+            if(bank.isBlank()) continue;
+
+            var powerbank = new PowerBank(bank);
+            solution += powerbank.findMaximumJoltage(batteriesToSwitchOn);
+        }
+        return solution;
+    }
 }

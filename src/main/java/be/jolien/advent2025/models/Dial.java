@@ -1,10 +1,10 @@
-package be.jolien.advent2025;
+package be.jolien.advent2025.models;
 
-class Dial {
+public class Dial {
     private final int range;
     private int currentPosition;
 
-    Dial(int range) {
+    public Dial(int range) {
         if(range < 0) {
             throw new IllegalArgumentException("Range must be positive");
         }
@@ -12,11 +12,11 @@ class Dial {
         this.currentPosition = 50;
     }
 
-    int getCurrentPosition() {
+    public int getCurrentPosition() {
         return  currentPosition;
     }
 
-    void move(char direction, int steps){
+    public void move(char direction, int steps){
         switch(direction) {
             case 'R':
                 currentPosition = (currentPosition + steps) % range;
@@ -29,7 +29,7 @@ class Dial {
         }
     }
 
-    int moveAndCountAllZeros(char direction, int steps) {
+    public int moveAndCountAllZeros(char direction, int steps) {
         int zeroCount = 0;
 
         for (int i = 0; i < steps; i++) {
