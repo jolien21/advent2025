@@ -1,6 +1,7 @@
 package be.jolien.advent2025;
 
 import be.jolien.advent2025.models.Dial;
+import be.jolien.advent2025.models.Grid;
 import be.jolien.advent2025.models.PowerBank;
 import org.springframework.stereotype.Service;
 
@@ -28,6 +29,11 @@ class InputService {
     List<String> getLinesByCommaFromUrl(String url){
         String rawText = inputClient.fetchRawText(url);
         return inputParser.parseToListByComma(rawText);
+    }
+
+    char[][] getGridFromUrl(String url){
+        String rawText = inputClient.fetchRawText(url);
+        return inputParser.parseToGrid(rawText);
     }
 
     int getSolutionDayOnePartOne(){
@@ -104,6 +110,26 @@ class InputService {
             var powerbank = new PowerBank(bank);
             solution += powerbank.findMaximumJoltage(batteriesToSwitchOn);
         }
+        return solution;
+    }
+
+    long getSolutionDayFourPart1(){
+        var grid = new Grid(this.getGridFromUrl("https://adventofcode.com/2025/day/4/input"));
+        var rowCount = grid.getRowCount();
+        var colCount = grid.getColCount();
+        var character = '@';
+        var limit = 4;
+
+        var solution = 0;
+
+        for(var row = 0; row < rowCount; row++){
+            for(var col = 0; col < colCount; col++){
+                if(grid.isCountOfNeighboursOfRowAndColCharacterLessThanLimit(row, col, character, limit)){
+                    solution++;
+                }
+            }
+        }
+
         return solution;
     }
 }

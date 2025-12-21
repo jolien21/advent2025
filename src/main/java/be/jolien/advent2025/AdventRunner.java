@@ -3,6 +3,8 @@ package be.jolien.advent2025;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
+import java.sql.SQLOutput;
+
 @Component
 class AdventRunner implements CommandLineRunner {
 
@@ -26,5 +28,7 @@ class AdventRunner implements CommandLineRunner {
         System.out.println("day 3.1: " + inputService.getSolutionDayThree(2));
 
         System.out.println("day 3.2: " + inputService.getSolutionDayThree(12));
+
+        System.out.println("day 4.1: " + inputService.getSolutionDayFourPart1());
     }
 }
