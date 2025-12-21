@@ -1,43 +1,32 @@
-package be.jolien.advent2025;
+package be.jolien.advent2025.services;
 
+import be.jolien.advent2025.IdChecker;
+import be.jolien.advent2025.InputParser;
 import be.jolien.advent2025.models.Dial;
 import be.jolien.advent2025.models.Grid;
 import be.jolien.advent2025.models.PowerBank;
+import be.jolien.advent2025.providers.DataProvider;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
-class InputService {
-    private final InputClient inputClient;
+public class SolutionService {
     private final InputParser inputParser;
+    private final DataProvider dataProvider;
     private final IdChecker idChecker;
+    private final RangeService rangeService;
 
-    InputService(InputClient inputClient,
-                 InputParser inputParser,
-                 IdChecker idChecker) {
-        this.inputClient = inputClient;
+    SolutionService(DataProvider dataProvider,
+                    InputParser inputParser,
+                    IdChecker idChecker,
+                    RangeService rangeService) {
+        this.dataProvider = dataProvider;
         this.inputParser = inputParser;
         this.idChecker = idChecker;
+        this.rangeService = rangeService;
     }
 
-    List<String> getLinesByEnterFromUrl(String url){
-        String rawText = inputClient.fetchRawText(url);
-        return inputParser.parseToListByEnter(rawText);
-    }
-
-    List<String> getLinesByCommaFromUrl(String url){
-        String rawText = inputClient.fetchRawText(url);
-        return inputParser.parseToListByComma(rawText);
-    }
-
-    char[][] getGridFromUrl(String url){
-        String rawText = inputClient.fetchRawText(url);
-        return inputParser.parseToGrid(rawText);
-    }
-
-    int getSolutionDayOnePartOne(){
-        var commands = this.getLinesByEnterFromUrl("https://adventofcode.com/2025/day/1/input");
+    public int getSolutionDayOnePartOne(){
+        var commands = dataProvider.getLines(1);
         var dial = new Dial(100);
         var solution = 0;
 
@@ -55,8 +44,8 @@ class InputService {
         return solution;
     }
 
-    int getSolutionDayOnePartTwo(){
-        var commands = this.getLinesByEnterFromUrl("https://adventofcode.com/2025/day/1/input");
+    public int getSolutionDayOnePartTwo(){
+        var commands = dataProvider.getLines(1);
         var dial = new Dial(100);
         var solution = 0;
 
@@ -71,8 +60,8 @@ class InputService {
         return solution;
     }
 
-    long getSolutionDayTwoPartOne(){
-        var commands = this.getLinesByCommaFromUrl("https://adventofcode.com/2025/day/2/input");
+    public long getSolutionDayTwoPartOne(){
+        var commands = dataProvider.getCommaSeparated(2);
         long solution = 0;
         for (String command : commands) {
             if(command.isBlank()) continue;
@@ -86,8 +75,8 @@ class InputService {
         return solution;
     }
 
-    long getSolutionDayTwoPartTwo(){
-        var commands = this.getLinesByCommaFromUrl("https://adventofcode.com/2025/day/2/input");
+    public long getSolutionDayTwoPartTwo(){
+        var commands = dataProvider.getCommaSeparated(2);
         long solution = 0;
         for (String command : commands) {
             if(command.isBlank()) continue;
@@ -101,8 +90,8 @@ class InputService {
         return solution;
     }
 
-    long getSolutionDayThree(int batteriesToSwitchOn){
-        var powerbanks = this.getLinesByEnterFromUrl("https://adventofcode.com/2025/day/3/input");
+    public long getSolutionDayThree(int batteriesToSwitchOn){
+        var powerbanks = dataProvider.getLines(3);
         long solution = 0;
         for(var bank : powerbanks){
             if(bank.isBlank()) continue;
@@ -113,8 +102,8 @@ class InputService {
         return solution;
     }
 
-    long getSolutionDayFourPart1(){
-        var grid = new Grid(this.getGridFromUrl("https://adventofcode.com/2025/day/4/input"));
+    public long getSolutionDayFourPart1(){
+        var grid = new Grid(dataProvider.getGrid(4));
         var rowCount = grid.getRowCount();
         var colCount = grid.getColCount();
         var character = '@';
@@ -133,8 +122,8 @@ class InputService {
         return solution;
     }
 
-    long getSolutionDayFourPartTwo(){
-        var grid = new Grid(this.getGridFromUrl("https://adventofcode.com/2025/day/4/input"));
+    public long getSolutionDayFourPartTwo(){
+        var grid = new Grid(dataProvider.getGrid(4));
         var rowCount = grid.getRowCount();
         var colCount = grid.getColCount();
         var character = '@';
@@ -153,6 +142,42 @@ class InputService {
                     }
                 }
             }
+        }
+        return solution;
+    }
+
+    public long getSolutionDayFivePartOne() {
+        var splittedData = dataProvider.getBlocks(5);
+
+        var ids = inputParser.parseToListByEnter(splittedData.get(1))
+                .stream()
+                .filter(s -> !s.isBlank())
+                .map(Long::parseLong)
+                .toList();
+
+        var stringRanges = inputParser.parseToListByEnter(splittedData.get(0));
+        var ranges = inputParser.parseListToRange(stringRanges);
+
+        long solution = 0;
+
+        for (var id : ids) {
+            if (idChecker.isIdInRangesOf(ranges, id)) {
+                solution++;
+            }
+        }
+        return solution;
+    }
+
+    public long getSolutionDayFivePartTwo() {
+        var splittedData = dataProvider.getBlocks(5);
+        var stringRanges = inputParser.parseToListByEnter(splittedData.getFirst());
+        var ranges = inputParser.parseListToRange(stringRanges);
+        var mergedRanges = rangeService.mergeRanges(ranges);
+
+        long solution = 0;
+
+        for (var range: mergedRanges){
+            solution += range.countNumbersInRange();
         }
         return solution;
     }

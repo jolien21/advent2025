@@ -1,36 +1,39 @@
 package be.jolien.advent2025;
 
+import be.jolien.advent2025.services.SolutionService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
-
-import java.sql.SQLOutput;
 
 @Component
 class AdventRunner implements CommandLineRunner {
 
-    private final InputService inputService;
+    private final SolutionService solutionService;
 
-    AdventRunner(InputService inputService) {
-        this.inputService = inputService;
+    AdventRunner(SolutionService solutionService) {
+        this.solutionService = solutionService;
     }
 
     @Override
     public void run(String... args) throws Exception {
 
-        System.out.println("day 1.1: " + inputService.getSolutionDayOnePartOne());
+        System.out.println("day 1.1: " + solutionService.getSolutionDayOnePartOne());
 
-        System.out.println("day 1.2: " + inputService.getSolutionDayOnePartTwo());
+        System.out.println("day 1.2: " + solutionService.getSolutionDayOnePartTwo());
 
-        System.out.println("day 2.1: " + inputService.getSolutionDayTwoPartOne());
+        System.out.println("day 2.1: " + solutionService.getSolutionDayTwoPartOne());
 
-        System.out.println("day 2.2: " + inputService.getSolutionDayTwoPartTwo());
+        System.out.println("day 2.2: " + solutionService.getSolutionDayTwoPartTwo());
 
-        System.out.println("day 3.1: " + inputService.getSolutionDayThree(2));
+        System.out.println("day 3.1: " + solutionService.getSolutionDayThree(2));
 
-        System.out.println("day 3.2: " + inputService.getSolutionDayThree(12));
+        System.out.println("day 3.2: " + solutionService.getSolutionDayThree(12));
 
-        System.out.println("day 4.1: " + inputService.getSolutionDayFourPart1());
+        System.out.println("day 4.1: " + solutionService.getSolutionDayFourPart1());
 
-        System.out.println("day 4.2: " + inputService.getSolutionDayFourPartTwo());
+        System.out.println("day 4.2: " + solutionService.getSolutionDayFourPartTwo());
+
+        System.out.println("day 5.1: " + solutionService.getSolutionDayFivePartOne());
+
+        System.out.println("day 5.2: " + solutionService.getSolutionDayFivePartTwo());
     }
 }

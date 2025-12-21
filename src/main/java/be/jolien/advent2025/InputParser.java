@@ -1,27 +1,29 @@
 package be.jolien.advent2025;
 
+import be.jolien.advent2025.models.Range;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
-class InputParser {
+public class InputParser {
 
-    List<String> parseToListByEnter(String rawInput) {
-        if(rawInput == null || rawInput.isBlank()){
+    public List<String> parseToListByEnter(String rawInput) {
+        if (rawInput == null || rawInput.isBlank()) {
             return List.of();
         }
         return List.of(rawInput.split("\\R"));
     }
 
-    List<String> parseToListByComma(String rawInput){
-        if(rawInput == null || rawInput.isBlank()){
+    public List<String> parseToListByComma(String rawInput) {
+        if (rawInput == null || rawInput.isBlank()) {
             return List.of();
         }
         return List.of(rawInput.split(","));
     }
 
-    char[][] parseToGrid(String rawInput){
+    public char[][] parseToGrid(String rawInput) {
         if (rawInput == null || rawInput.isBlank()) {
             return new char[0][0];
         }
@@ -37,4 +39,24 @@ class InputParser {
         }
         return grid;
     }
+
+    public List<String> parseToListByDoubleEnter(String rawInput) {
+        if (rawInput == null || rawInput.isBlank()) {
+            return List.of();
+        }
+
+        return List.of(rawInput.split("\\R{2,}"));
+    }
+
+    public List<Range> parseListToRange(List<String> inputList){
+        return inputList.stream()
+                .filter(s -> s.contains("-"))
+                .map(line -> {
+                    var parts = line.split("-");
+                    return new Range(Long.parseLong(parts[0].trim()), Long.parseLong(parts[1].trim()));
+                })
+                .toList();
+    }
+
+
 }

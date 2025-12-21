@@ -1,6 +1,9 @@
 package be.jolien.advent2025;
 
+import be.jolien.advent2025.models.Range;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 @Component
 public class IdChecker {
@@ -56,6 +59,13 @@ public class IdChecker {
                     return true;
                 }
             }
+        }
+        return false;
+    }
+
+    public boolean isIdInRangesOf(List<Range> ranges, long targetId){
+        for(var range : ranges){
+            if(range.isTargetInRange(targetId)) return true;
         }
         return false;
     }
