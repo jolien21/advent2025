@@ -132,4 +132,28 @@ class InputService {
 
         return solution;
     }
+
+    long getSolutionDayFourPartTwo(){
+        var grid = new Grid(this.getGridFromUrl("https://adventofcode.com/2025/day/4/input"));
+        var rowCount = grid.getRowCount();
+        var colCount = grid.getColCount();
+        var character = '@';
+        var limit = 4;
+
+        var solution = 0;
+        var removedCharacter = true;
+
+        while(removedCharacter) {
+            removedCharacter = false;
+            for (var row = 0; row < rowCount; row++) {
+                for (var col = 0; col < colCount; col++) {
+                    if (grid.canRemoveCharacter(row, col, character, limit)) {
+                        solution++;
+                        removedCharacter = true;
+                    }
+                }
+            }
+        }
+        return solution;
+    }
 }

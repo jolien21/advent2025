@@ -1,9 +1,15 @@
 package be.jolien.advent2025.models;
 
 public class Grid {
-    private final char[][] grid;
+    private char[][] grid;
 
     public Grid(char[][] grid) {
+        if(grid == null) {
+            throw new IllegalArgumentException("Grid cannot be null");
+        }
+        if(grid.length != grid[0].length){
+            throw new IllegalArgumentException("Grid must have same length");
+        }
         this.grid = grid;
     }
 
@@ -45,5 +51,21 @@ public class Grid {
         }
 
         return counter < limit;
+    }
+
+    public boolean canRemoveCharacter(int row, int col, char character, int limit) {
+        if (grid[row][col] != character ) {
+            return false;
+        }
+
+        if(this.isCountOfNeighboursOfRowAndColCharacterLessThanLimit(row, col, character, limit)) {
+            this.removeCharacterTo(row, col, '.');
+            return true;
+        }
+        return false;
+    }
+
+    void removeCharacterTo(int row, int col, char newCharacter){
+        grid[row][col] = newCharacter;
     }
 }
