@@ -1,28 +1,41 @@
 package be.jolien.advent2025.services;
 
 import be.jolien.advent2025.IdChecker;
-import be.jolien.advent2025.InputParser;
-import be.jolien.advent2025.models.Dial;
-import be.jolien.advent2025.models.Grid;
-import be.jolien.advent2025.models.PowerBank;
+import be.jolien.advent2025.parsers.GridParser;
+import be.jolien.advent2025.parsers.ListParser;
+import be.jolien.advent2025.models.*;
+import be.jolien.advent2025.parsers.RangeParser;
 import be.jolien.advent2025.providers.DataProvider;
+import be.jolien.advent2025.providers.GridProvider;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class SolutionService {
-    private final InputParser inputParser;
+    private final ListParser listParser;
     private final DataProvider dataProvider;
     private final IdChecker idChecker;
     private final RangeService rangeService;
+    private final GridParser gridParser;
+    private final GridProvider gridProvider;
+    private final RangeParser rangeParser;
 
     SolutionService(DataProvider dataProvider,
-                    InputParser inputParser,
+                    ListParser listParser,
                     IdChecker idChecker,
-                    RangeService rangeService) {
+                    RangeService rangeService,
+                    GridParser gridParser,
+                    GridProvider gridProvider,
+                    RangeParser rangeParser) {
         this.dataProvider = dataProvider;
-        this.inputParser = inputParser;
+        this.listParser = listParser;
         this.idChecker = idChecker;
         this.rangeService = rangeService;
+        this.gridParser = gridParser;
+        this.gridProvider = gridProvider;
+        this.rangeParser = rangeParser;
     }
 
     public int getSolutionDayOnePartOne(){
@@ -103,30 +116,27 @@ public class SolutionService {
     }
 
     public long getSolutionDayFourPart1(){
-        var grid = new Grid(dataProvider.getGrid(4));
+        var grid = gridProvider.getCharacterGrid(4);
         var rowCount = grid.getRowCount();
         var colCount = grid.getColCount();
-        var character = '@';
         var limit = 4;
 
         var solution = 0;
 
         for(var row = 0; row < rowCount; row++){
             for(var col = 0; col < colCount; col++){
-                if(grid.isCountOfNeighboursOfRowAndColCharacterLessThanLimit(row, col, character, limit)){
+                if(grid.isCountOfNeighboursLessThanLimit(row, col, val -> val == '@', limit)){
                     solution++;
                 }
             }
         }
-
         return solution;
     }
 
     public long getSolutionDayFourPartTwo(){
-        var grid = new Grid(dataProvider.getGrid(4));
+        var grid = gridProvider.getCharacterGrid(4);
         var rowCount = grid.getRowCount();
         var colCount = grid.getColCount();
-        var character = '@';
         var limit = 4;
 
         var solution = 0;
@@ -136,7 +146,7 @@ public class SolutionService {
             removedCharacter = false;
             for (var row = 0; row < rowCount; row++) {
                 for (var col = 0; col < colCount; col++) {
-                    if (grid.canRemoveCharacter(row, col, character, limit)) {
+                    if (grid.canUpdateValue(row, col, val -> val == '@', limit, '.')) {
                         solution++;
                         removedCharacter = true;
                     }
@@ -149,14 +159,14 @@ public class SolutionService {
     public long getSolutionDayFivePartOne() {
         var splittedData = dataProvider.getBlocks(5);
 
-        var ids = inputParser.parseToListByEnter(splittedData.get(1))
+        var ids = listParser.parseToListByEnter(splittedData.get(1))
                 .stream()
                 .filter(s -> !s.isBlank())
                 .map(Long::parseLong)
                 .toList();
 
-        var stringRanges = inputParser.parseToListByEnter(splittedData.get(0));
-        var ranges = inputParser.parseListToRange(stringRanges);
+        var stringRanges = listParser.parseToListByEnter(splittedData.get(0));
+        var ranges = rangeParser.parseListToRange(stringRanges);
 
         long solution = 0;
 
@@ -170,8 +180,8 @@ public class SolutionService {
 
     public long getSolutionDayFivePartTwo() {
         var splittedData = dataProvider.getBlocks(5);
-        var stringRanges = inputParser.parseToListByEnter(splittedData.getFirst());
-        var ranges = inputParser.parseListToRange(stringRanges);
+        var stringRanges = listParser.parseToListByEnter(splittedData.getFirst());
+        var ranges = rangeParser.parseListToRange(stringRanges);
         var mergedRanges = rangeService.mergeRanges(ranges);
 
         long solution = 0;
@@ -180,5 +190,79 @@ public class SolutionService {
             solution += range.countNumbersInRange();
         }
         return solution;
+    }
+
+    public long getSolutionDaySixPartOne(){
+        var stringGrid = gridProvider.getStringGrid(6);
+
+        var operatorRow = stringGrid.getRow(stringGrid.getRowCount() -1);
+
+        var numberGrid = gridParser.parseStringToNumberGridAndRemoveLastRow(stringGrid);
+
+        long solution = 0;
+
+        for(var col = 0; col < numberGrid.getColCount(); col++){
+            var operator = operatorRow.get(col);
+            if (operator.equals("+") || operator.equals("*") || operator.equals("-")) {
+                solution += numberGrid.calculateColumnByOperator(col, operator);
+            }
+        }
+        return solution;
+    }
+
+    public long getSolutionDaySixPartTwo() {
+        var grid = gridProvider.getStringGrid(6);
+        int rowCount = grid.getRowCount();
+        int colCount = grid.getColCount();
+
+        long grandTotal = 0;
+        List<Long> currentProblemNumbers = new ArrayList<>();
+        String currentOperator = "";
+
+        for (int col = colCount - 1; col >= 0; col--) {
+            StringBuilder verticalNumber = new StringBuilder();
+            boolean hasDigitInColumn = false;
+
+            for (int row = 0; row < rowCount - 1; row++) {
+                String cell = grid.getValue(row, col);
+                if (cell != null && !cell.isBlank() && Character.isDigit(cell.charAt(0))) {
+                    verticalNumber.append(cell.trim());
+                    hasDigitInColumn = true;
+                }
+            }
+
+            String opAtBottom = grid.getValue(rowCount - 1, col).trim();
+            if (!opAtBottom.isEmpty()) {
+                currentOperator = opAtBottom;
+            }
+
+            if (hasDigitInColumn) {
+                currentProblemNumbers.add(Long.parseLong(verticalNumber.toString()));
+            } else {
+                if (!currentProblemNumbers.isEmpty()) {
+                    grandTotal += calculateResult(currentProblemNumbers, currentOperator);
+                    currentProblemNumbers.clear();
+                }
+            }
+        }
+
+        if (!currentProblemNumbers.isEmpty()) {
+            grandTotal += calculateResult(currentProblemNumbers, currentOperator);
+        }
+
+        return grandTotal;
+    }
+
+    private long calculateResult(List<Long> nums, String op) {
+        if (nums.isEmpty()) return 0;
+        long res = nums.getFirst();
+        for (int i = 1; i < nums.size(); i++) {
+            switch (op) {
+                case "+" -> res += nums.get(i);
+                case "*" -> res *= nums.get(i);
+                case "-" -> res -= nums.get(i);
+            }
+        }
+        return res;
     }
 }

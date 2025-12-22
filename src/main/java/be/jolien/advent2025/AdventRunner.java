@@ -35,5 +35,10 @@ class AdventRunner implements CommandLineRunner {
         System.out.println("day 5.1: " + solutionService.getSolutionDayFivePartOne());
 
         System.out.println("day 5.2: " + solutionService.getSolutionDayFivePartTwo());
+
+        System.out.println("day 6.1: " + solutionService.getSolutionDaySixPartOne());
+
+        System.out.println("day 6.2: " + solutionService.getSolutionDaySixPartTwo());
+
     }
 }
