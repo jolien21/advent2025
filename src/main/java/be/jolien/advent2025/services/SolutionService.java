@@ -265,4 +265,14 @@ public class SolutionService {
         }
         return res;
     }
+
+    public long getSolutionDaySevenPartOne(){
+        var manifold = gridProvider.getCharacterGrid(7);
+        return manifold.countTimesBeamSplittedWhileGoingDown();
+    }
+
+    public long getSolutionDaySevenPartTwo(){
+        var manifold = gridProvider.getCharacterGrid(7);
+        return manifold.countTimelines();
+    }
 }

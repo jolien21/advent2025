@@ -1,6 +1,7 @@
 package be.jolien.advent2025.models;
 
-import java.util.ArrayList;
+import java.awt.*;
+import java.util.*;
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -156,4 +157,80 @@ public class GenericGrid<T> {
         }
         return sb.toString();
     }
+
+
+    public long countTimesBeamSplittedWhileGoingDown() {
+        long counter = 0;
+        Set<String> activatedSplitters = new HashSet<>();
+
+        Queue<Position> queue = new LinkedList<>();
+
+        Position start = getBeamStartingPosition();
+        if (start != null) queue.add(start);
+
+        while (!queue.isEmpty()) {
+            Position current = queue.poll();
+            int nextRow = current.getRow() + 1;
+            int col = current.getCol();
+
+            if (nextRow >= getRowCount()) continue;
+
+            T targetValue = getValue(nextRow, col);
+
+            if (targetValue.equals('^')) {
+                String splitterKey = nextRow + "," + col;
+                if (!activatedSplitters.contains(splitterKey)) {
+                    activatedSplitters.add(splitterKey);
+                    counter++;
+                    if (col - 1 >= 0) queue.add(new Position(nextRow, col - 1));
+                    if (col + 1 < getColCount()) queue.add(new Position(nextRow, col + 1));
+                }
+            } else {
+                queue.add(new Position(nextRow, col));
+            }
+        }
+        return counter;
+    }
+
+    Position getBeamStartingPosition(){
+        var beamStartRow =  getRow(0);
+        for(int i = 0; i < getRowCount(); i++){
+            if(beamStartRow.get(i).equals('S')){
+                return new Position(0,i);
+            }
+        }
+        return null;
+    }
+
+    public long countTimelines() {
+        int rows = getRowCount();
+        int cols = getColCount();
+        long[][] pathCounts = new long[rows + 1][cols];
+
+        Position start = getBeamStartingPosition();
+        pathCounts[start.getRow()][start.getCol()] = 1;
+
+        for (int r = 0; r < rows; r++) {
+            for (int c = 0; c < cols; c++) {
+                long currentPaths = pathCounts[r][c];
+                if (currentPaths == 0) continue;
+
+                char cell = (char) getValue(r, c);
+
+                if (cell == '^') {
+                    if (c - 1 >= 0) pathCounts[r + 1][c - 1] += currentPaths;
+                    if (c + 1 < cols) pathCounts[r + 1][c + 1] += currentPaths;
+                } else {
+                    pathCounts[r + 1][c] += currentPaths;
+                }
+            }
+        }
+
+        long totalTimelines = 0;
+        for (int c = 0; c < cols; c++) {
+            totalTimelines += pathCounts[rows][c];
+        }
+        return totalTimelines;
+    }
+
 }
