@@ -1,8 +1,6 @@
 package be.jolien.advent2025.models;
 
-import java.awt.*;
 import java.util.*;
-import java.util.List;
 import java.util.function.Predicate;
 
 public class GenericGrid<T> {
@@ -69,9 +67,6 @@ public class GenericGrid<T> {
         return col;
     }
 
-    /**
-     * Telt hoeveel buren voldoen aan de opgegeven conditie.
-     */
     public boolean isCountOfNeighboursLessThanLimit(int row, int col, Predicate<T> condition, int limit) {
         int counter = 0;
         int rowCount = getRowCount();
@@ -93,13 +88,9 @@ public class GenericGrid<T> {
                 }
             }
         }
-
         return counter < limit;
     }
 
-    /**
-     * Controleert of een waarde aangepast mag worden op basis van de buren.
-     */
     public boolean canUpdateValue(int row, int col, Predicate<T> condition, int limit, T newValue) {
         if (!condition.test(grid[row][col])) {
             return false;
@@ -118,10 +109,8 @@ public class GenericGrid<T> {
 
     public List<String> concatenateColumns() {
         List<String> combinedColumns = new ArrayList<>();
-
         for (int col = getColCount() - 1; col >= 0; col--) {
             StringBuilder sb = new StringBuilder();
-
             for (int row = 0; row < getRowCount(); row++) {
                 T cellValue = getValue(row, col);
                 if (cellValue != null) {
@@ -131,7 +120,6 @@ public class GenericGrid<T> {
                     }
                 }
             }
-
             String result = sb.toString();
             if (!result.isEmpty()) {
                 combinedColumns.add(result);
@@ -158,11 +146,9 @@ public class GenericGrid<T> {
         return sb.toString();
     }
 
-
     public long countTimesBeamSplittedWhileGoingDown() {
         long counter = 0;
         Set<String> activatedSplitters = new HashSet<>();
-
         Queue<Position> queue = new LinkedList<>();
 
         Position start = getBeamStartingPosition();
@@ -170,33 +156,35 @@ public class GenericGrid<T> {
 
         while (!queue.isEmpty()) {
             Position current = queue.poll();
-            int nextRow = current.getRow() + 1;
-            int col = current.getCol();
+            int x = current.getX();
+            int y = current.getY();
 
-            if (nextRow >= getRowCount()) continue;
+            int nextY = y + 1;
 
-            T targetValue = getValue(nextRow, col);
+            if (nextY >= getRowCount()) continue;
+
+            T targetValue = getValue(nextY, x);
 
             if (targetValue.equals('^')) {
-                String splitterKey = nextRow + "," + col;
+                String splitterKey = nextY + "," + x;
                 if (!activatedSplitters.contains(splitterKey)) {
                     activatedSplitters.add(splitterKey);
                     counter++;
-                    if (col - 1 >= 0) queue.add(new Position(nextRow, col - 1));
-                    if (col + 1 < getColCount()) queue.add(new Position(nextRow, col + 1));
+                    if (x - 1 >= 0) queue.add(new Position(x - 1, nextY));
+                    if (x + 1 < getColCount()) queue.add(new Position(x + 1, nextY));
                 }
             } else {
-                queue.add(new Position(nextRow, col));
+                queue.add(new Position(x, nextY));
             }
         }
         return counter;
     }
 
-    Position getBeamStartingPosition(){
-        var beamStartRow =  getRow(0);
-        for(int i = 0; i < getRowCount(); i++){
-            if(beamStartRow.get(i).equals('S')){
-                return new Position(0,i);
+    Position getBeamStartingPosition() {
+        List<T> firstRow = getRow(0);
+        for (int i = 0; i < getColCount(); i++) {
+            if (firstRow.get(i).equals('S')) {
+                return new Position(i, 0);
             }
         }
         return null;
@@ -208,16 +196,18 @@ public class GenericGrid<T> {
         long[][] pathCounts = new long[rows + 1][cols];
 
         Position start = getBeamStartingPosition();
-        pathCounts[start.getRow()][start.getCol()] = 1;
+        if (start == null) return 0;
+
+        pathCounts[start.getY()][start.getX()] = 1;
 
         for (int r = 0; r < rows; r++) {
             for (int c = 0; c < cols; c++) {
                 long currentPaths = pathCounts[r][c];
                 if (currentPaths == 0) continue;
 
-                char cell = (char) getValue(r, c);
+                Object cell = getValue(r, c);
 
-                if (cell == '^') {
+                if (cell.equals('^')) {
                     if (c - 1 >= 0) pathCounts[r + 1][c - 1] += currentPaths;
                     if (c + 1 < cols) pathCounts[r + 1][c + 1] += currentPaths;
                 } else {
@@ -232,5 +222,4 @@ public class GenericGrid<T> {
         }
         return totalTimelines;
     }
-
 }

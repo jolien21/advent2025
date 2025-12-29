@@ -1,15 +1,19 @@
 package be.jolien.advent2025.services;
 
+import be.jolien.advent2025.managers.CircuitManager;
 import be.jolien.advent2025.IdChecker;
+import be.jolien.advent2025.managers.ConnectionManager;
 import be.jolien.advent2025.parsers.GridParser;
 import be.jolien.advent2025.parsers.ListParser;
 import be.jolien.advent2025.models.*;
 import be.jolien.advent2025.parsers.RangeParser;
 import be.jolien.advent2025.providers.DataProvider;
 import be.jolien.advent2025.providers.GridProvider;
+import be.jolien.advent2025.providers.PositionProvider;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -21,6 +25,7 @@ public class SolutionService {
     private final GridParser gridParser;
     private final GridProvider gridProvider;
     private final RangeParser rangeParser;
+    private final PositionProvider positionProvider;
 
     SolutionService(DataProvider dataProvider,
                     ListParser listParser,
@@ -28,7 +33,8 @@ public class SolutionService {
                     RangeService rangeService,
                     GridParser gridParser,
                     GridProvider gridProvider,
-                    RangeParser rangeParser) {
+                    RangeParser rangeParser,
+                    PositionProvider positionProvider) {
         this.dataProvider = dataProvider;
         this.listParser = listParser;
         this.idChecker = idChecker;
@@ -36,6 +42,7 @@ public class SolutionService {
         this.gridParser = gridParser;
         this.gridProvider = gridProvider;
         this.rangeParser = rangeParser;
+        this.positionProvider = positionProvider;
     }
 
     public int getSolutionDayOnePartOne(){
@@ -117,15 +124,11 @@ public class SolutionService {
 
     public long getSolutionDayFourPart1(){
         var grid = gridProvider.getCharacterGrid(4);
-        var rowCount = grid.getRowCount();
-        var colCount = grid.getColCount();
-        var limit = 4;
-
         var solution = 0;
 
-        for(var row = 0; row < rowCount; row++){
-            for(var col = 0; col < colCount; col++){
-                if(grid.isCountOfNeighboursLessThanLimit(row, col, val -> val == '@', limit)){
+        for(var row = 0; row < grid.getRowCount(); row++){
+            for(var col = 0; col < grid.getColCount(); col++){
+                if(grid.isCountOfNeighboursLessThanLimit(row, col, val -> val != null && val == '@' , 4)){
                     solution++;
                 }
             }
@@ -135,8 +138,6 @@ public class SolutionService {
 
     public long getSolutionDayFourPartTwo(){
         var grid = gridProvider.getCharacterGrid(4);
-        var rowCount = grid.getRowCount();
-        var colCount = grid.getColCount();
         var limit = 4;
 
         var solution = 0;
@@ -144,9 +145,9 @@ public class SolutionService {
 
         while(removedCharacter) {
             removedCharacter = false;
-            for (var row = 0; row < rowCount; row++) {
-                for (var col = 0; col < colCount; col++) {
-                    if (grid.canUpdateValue(row, col, val -> val == '@', limit, '.')) {
+            for (var row = 0; row < grid.getRowCount(); row++) {
+                for (var col = 0; col < grid.getColCount(); col++) {
+                    if (grid.canUpdateValue(row, col, val -> val != null && val == '@', limit, '.')) {
                         solution++;
                         removedCharacter = true;
                     }
@@ -274,5 +275,33 @@ public class SolutionService {
     public long getSolutionDaySevenPartTwo(){
         var manifold = gridProvider.getCharacterGrid(7);
         return manifold.countTimelines();
+    }
+    public long getSolutionDayEightPartOne() {
+        var junctionBoxes = positionProvider.get3DPositions(8);
+        var connectionManager = new ConnectionManager();
+        var connections = connectionManager.getSortedConnections(junctionBoxes);
+
+        CircuitManager manager = new CircuitManager(junctionBoxes.size());
+
+        int limit = Math.min(1000, connections.size());
+
+        for (int k = 0; k < limit; k++) {
+            Connection c = connections.get(k);
+            manager.union(c.indexA, c.indexB);
+        }
+
+        List<Integer> sizes = manager.getAllCircuitSizes();
+        sizes.sort(Collections.reverseOrder());
+
+        return (long) sizes.get(0) * sizes.get(1) * sizes.get(2);
+    }
+
+    public long getSolutionDayEightPartTwo() {
+        var junctionBoxes = positionProvider.get3DPositions(8);
+        var connectionManager = new ConnectionManager();
+
+        var connections = connectionManager.getSortedConnections(junctionBoxes);
+
+        return connectionManager.findXProductOfFinalCircuitClosingConnection(junctionBoxes, connections);
     }
 }
