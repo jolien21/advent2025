@@ -332,18 +332,6 @@ public class SolutionService {
         var machines = machineProvider.getMachines(10);
         var machineService = new MachineService();
 
-        List<Machine> testMachines = List.of(
-                new Machine(".##.", List.of(
-                        List.of(3), List.of(1,3), List.of(2), List.of(2,3), List.of(0,2), List.of(0,1)
-                ), List.of(3,5,4,7)),
-                new Machine("...#.", List.of(
-                        List.of(0,2,3,4), List.of(2,3), List.of(0,4), List.of(0,1,2), List.of(1,2,3,4)
-                ), List.of(7,5,12,7,2)),
-                new Machine(".###.#", List.of(
-                        List.of(0,1,2,3,4), List.of(0,3,4), List.of(0,1,2,4,5), List.of(1,2)
-                ), List.of(10,11,11,5,10,5))
-        );
-        System.out.println("Result: " + machineService.calculateMinumumPushesForJoltage(testMachines));
         return machineService.calculateMinumumPushesForJoltage(machines);
     }
 }

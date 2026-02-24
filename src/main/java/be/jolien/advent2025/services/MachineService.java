@@ -5,11 +5,6 @@ import org.apache.commons.math3.optim.nonlinear.scalar.GoalType;
 import org.springframework.stereotype.Service;
 import org.apache.commons.math3.optim.linear.*;
 import org.apache.commons.math3.optim.*;
-import org.chocosolver.solver.Model;
-import org.chocosolver.solver.variables.IntVar;
-import org.chocosolver.solver.search.strategy.Search;
-import org.chocosolver.solver.search.strategy.selectors.variables.FirstFail;
-import org.chocosolver.solver.search.strategy.selectors.values.IntDomainMin;
 
 import java.util.*;
 
