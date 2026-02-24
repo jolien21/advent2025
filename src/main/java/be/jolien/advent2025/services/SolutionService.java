@@ -1,14 +1,13 @@
 package be.jolien.advent2025.services;
 
-import be.jolien.advent2025.managers.CircuitManager;
 import be.jolien.advent2025.IdChecker;
-import be.jolien.advent2025.managers.ConnectionManager;
 import be.jolien.advent2025.parsers.GridParser;
 import be.jolien.advent2025.parsers.ListParser;
 import be.jolien.advent2025.models.*;
 import be.jolien.advent2025.parsers.RangeParser;
 import be.jolien.advent2025.providers.DataProvider;
 import be.jolien.advent2025.providers.GridProvider;
+import be.jolien.advent2025.providers.MachineProvider;
 import be.jolien.advent2025.providers.PositionProvider;
 import org.springframework.stereotype.Service;
 
@@ -26,6 +25,7 @@ public class SolutionService {
     private final GridProvider gridProvider;
     private final RangeParser rangeParser;
     private final PositionProvider positionProvider;
+    private final MachineProvider machineProvider;
 
     SolutionService(DataProvider dataProvider,
                     ListParser listParser,
@@ -34,7 +34,8 @@ public class SolutionService {
                     GridParser gridParser,
                     GridProvider gridProvider,
                     RangeParser rangeParser,
-                    PositionProvider positionProvider) {
+                    PositionProvider positionProvider,
+                    MachineProvider machineProvider) {
         this.dataProvider = dataProvider;
         this.listParser = listParser;
         this.idChecker = idChecker;
@@ -43,6 +44,7 @@ public class SolutionService {
         this.gridProvider = gridProvider;
         this.rangeParser = rangeParser;
         this.positionProvider = positionProvider;
+        this.machineProvider = machineProvider;
     }
 
     public int getSolutionDayOnePartOne(){
@@ -278,10 +280,10 @@ public class SolutionService {
     }
     public long getSolutionDayEightPartOne() {
         var junctionBoxes = positionProvider.get3DPositions(8);
-        var connectionManager = new ConnectionManager();
+        var connectionManager = new ConnectionService();
         var connections = connectionManager.getSortedConnections(junctionBoxes);
 
-        CircuitManager manager = new CircuitManager(junctionBoxes.size());
+        CircuitService manager = new CircuitService(junctionBoxes.size());
 
         int limit = Math.min(1000, connections.size());
 
@@ -298,10 +300,50 @@ public class SolutionService {
 
     public long getSolutionDayEightPartTwo() {
         var junctionBoxes = positionProvider.get3DPositions(8);
-        var connectionManager = new ConnectionManager();
+        var connectionManager = new ConnectionService();
 
         var connections = connectionManager.getSortedConnections(junctionBoxes);
 
         return connectionManager.findXProductOfFinalCircuitClosingConnection(junctionBoxes, connections);
+    }
+
+    public long getSolutionDayNinePartOne(){
+        var coordinates = positionProvider.getPositionsAsSet(9);
+        var rectangleService = new  RectangleService();
+
+        return rectangleService.getLargestOppervlakte(coordinates);
+    }
+
+    public long getSolutionDayNinePartTwo(){
+        var coordinates = positionProvider.getPositionsAsList(9);
+        var rectangleService = new  RectangleService();
+
+        return rectangleService.getLargestOppervlaktePartTwo(coordinates);
+    }
+
+    public long getSolutionDayTenPartOne() {
+        var machines = machineProvider.getMachines(10);
+        var machineService = new MachineService();
+
+        return machineService.calculateMinimumPushesForDiagram(machines);
+    }
+
+    public long getSolutionDayTenPartTwo() {
+        var machines = machineProvider.getMachines(10);
+        var machineService = new MachineService();
+
+        List<Machine> testMachines = List.of(
+                new Machine(".##.", List.of(
+                        List.of(3), List.of(1,3), List.of(2), List.of(2,3), List.of(0,2), List.of(0,1)
+                ), List.of(3,5,4,7)),
+                new Machine("...#.", List.of(
+                        List.of(0,2,3,4), List.of(2,3), List.of(0,4), List.of(0,1,2), List.of(1,2,3,4)
+                ), List.of(7,5,12,7,2)),
+                new Machine(".###.#", List.of(
+                        List.of(0,1,2,3,4), List.of(0,3,4), List.of(0,1,2,4,5), List.of(1,2)
+                ), List.of(10,11,11,5,10,5))
+        );
+        System.out.println("Result: " + machineService.calculateMinumumPushesForJoltage(testMachines));
+        return machineService.calculateMinumumPushesForJoltage(machines);
     }
 }

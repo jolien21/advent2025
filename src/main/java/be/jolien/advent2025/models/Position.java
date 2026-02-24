@@ -2,11 +2,11 @@ package be.jolien.advent2025.models;
 
 import java.util.Objects;
 
-class Position {
+public class Position {
     private final int x;
     private final int y;
 
-    Position(int x, int y) {
+    public Position(int x, int y) {
         this.x = x;
         this.y = y;
     }

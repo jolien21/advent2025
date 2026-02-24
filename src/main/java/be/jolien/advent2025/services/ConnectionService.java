@@ -1,12 +1,13 @@
-package be.jolien.advent2025.managers;
+package be.jolien.advent2025.services;
 
 import be.jolien.advent2025.models.Connection;
 import be.jolien.advent2025.models.Position3D;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class ConnectionManager {
+public class ConnectionService {
 
     /**
      * Berekent alle mogelijke unieke verbindingen tussen de gegeven posities
@@ -32,7 +33,7 @@ public class ConnectionManager {
      */
     public long findXProductOfFinalCircuitClosingConnection(List<Position3D> positions, List<Connection> sortedConnections) {
         int totalPoints = positions.size();
-        CircuitManager circuitManager = new CircuitManager(totalPoints);
+        CircuitService circuitManager = new CircuitService(totalPoints);
         int circuitsLeft = totalPoints;
 
         for (Connection conn : sortedConnections) {

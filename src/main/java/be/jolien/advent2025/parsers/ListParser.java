@@ -7,6 +7,7 @@ import java.util.List;
 @Component
 public class ListParser {
 
+    //Strings
     public List<String> parseToListByEnter(String rawInput) {
         if (rawInput == null || rawInput.isBlank()) {
             return List.of();
@@ -31,5 +32,14 @@ public class ListParser {
         return List.of(rawInput.split("\\R{2,}"));
     }
 
+    //Characters
+    public List<Character> parseToCharacterList(String rawInput) {
+        if (rawInput == null || rawInput.isBlank()) {
+            return List.of();
+        }
+        return rawInput.chars()
+                .mapToObj(c -> (char) c)
+                .toList();
+    }
 
 }

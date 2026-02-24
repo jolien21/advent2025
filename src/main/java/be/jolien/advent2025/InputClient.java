@@ -21,7 +21,7 @@ public class InputClient {
     public String fetchRawText(String url){
         return restClient.get()
                 .uri(url)
-                .header("Cookie", "session=53616c7465645f5fd77485d447ace8293b32ed6fe934b10a8692f0d72902f1dd418903555dc582dd2ce1f0f6e11ef9841f237327d1923546c32829e276a4e36c")
+                .header("Cookie", "session=53616c7465645f5f4f1f29ce37f29e7a784d54ebb3e5e2721a09f1b4e60adccf7028d020c5bee892d7480714eb8663916f5789dd5c2e6339445a13889bb0aa59")
                 .retrieve()
                 .body(String.class);
     }

@@ -2,11 +2,13 @@ package be.jolien.advent2025.providers;
 
 import be.jolien.advent2025.InputClient;
 import be.jolien.advent2025.models.Position3D;
+import be.jolien.advent2025.models.Position;
 import be.jolien.advent2025.parsers.ListParser;
 import be.jolien.advent2025.parsers.PositionParser;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Set;
 
 @Component
 public class PositionProvider {
@@ -31,6 +33,18 @@ public class PositionProvider {
         String rawText = inputClient.fetchRawText(urlProvider.getUrlForDay(day));
         var rawList =  listParser.parseToListByEnter(rawText);
         return positionParser.parseListToPostion3DList(rawList);
+    }
 
+    public Set<Position> getPositionsAsSet(int day){
+        String rawText = inputClient.fetchRawText(urlProvider.getUrlForDay(day));
+        var rawList = listParser.parseToListByEnter(rawText);
+
+        return positionParser.parseListToPositionSet(rawList);
+    }
+
+    public List<Position> getPositionsAsList(int day){
+        String rawText = inputClient.fetchRawText(urlProvider.getUrlForDay(day));
+        var rawList = listParser.parseToListByEnter(rawText);
+        return positionParser.parseListToPositionList(rawList);
     }
 }

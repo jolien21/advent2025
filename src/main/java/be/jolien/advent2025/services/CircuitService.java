@@ -1,13 +1,13 @@
-package be.jolien.advent2025.managers;
+package be.jolien.advent2025.services;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class CircuitManager {
+public class CircuitService {
     private final int[] parent;
     private final int[] size;
 
-    public CircuitManager(int n) {
+    public CircuitService(int n) {
         parent = new int[n];
         size = new int[n];
         for (int i = 0; i < n; i++) {
