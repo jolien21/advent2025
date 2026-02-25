@@ -5,10 +5,7 @@ import be.jolien.advent2025.parsers.GridParser;
 import be.jolien.advent2025.parsers.ListParser;
 import be.jolien.advent2025.models.*;
 import be.jolien.advent2025.parsers.RangeParser;
-import be.jolien.advent2025.providers.DataProvider;
-import be.jolien.advent2025.providers.GridProvider;
-import be.jolien.advent2025.providers.MachineProvider;
-import be.jolien.advent2025.providers.PositionProvider;
+import be.jolien.advent2025.providers.*;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -26,6 +23,7 @@ public class SolutionService {
     private final RangeParser rangeParser;
     private final PositionProvider positionProvider;
     private final MachineProvider machineProvider;
+    private final DeviceProvider deviceProvider;
 
     SolutionService(DataProvider dataProvider,
                     ListParser listParser,
@@ -35,7 +33,8 @@ public class SolutionService {
                     GridProvider gridProvider,
                     RangeParser rangeParser,
                     PositionProvider positionProvider,
-                    MachineProvider machineProvider) {
+                    MachineProvider machineProvider,
+                    DeviceProvider deviceProvider) {
         this.dataProvider = dataProvider;
         this.listParser = listParser;
         this.idChecker = idChecker;
@@ -45,6 +44,7 @@ public class SolutionService {
         this.rangeParser = rangeParser;
         this.positionProvider = positionProvider;
         this.machineProvider = machineProvider;
+        this.deviceProvider = deviceProvider;
     }
 
     public int getSolutionDayOnePartOne(){
@@ -333,5 +333,19 @@ public class SolutionService {
         var machineService = new MachineService();
 
         return machineService.calculateMinumumPushesForJoltage(machines);
+    }
+
+    public long getSolutionDayElevenPartOne(){
+        var devices = deviceProvider.getDevices(11);
+        var deviceService = new DeviceService();
+
+        return deviceService.calculatePathsFromYouToOut(devices);
+    }
+
+    public long getSolutionDayElevenPartTwo(){
+        var devices = deviceProvider.getDevices(11);
+        var deviceService = new DeviceService();
+
+        return deviceService.findAmountPathsVisitedDacAndFft(devices);
     }
 }
