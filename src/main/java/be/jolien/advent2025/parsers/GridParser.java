@@ -86,4 +86,16 @@ public class GridParser {
         }
         return new GenericGrid<>(grid);
     }
+
+    boolean[][] convertToBooleanGrid(List<String> lines) {
+        int rows = lines.size();
+        int cols = lines.get(0).length();
+        boolean[][] grid = new boolean[rows][cols];
+        for (int r = 0; r < rows; r++) {
+            for (int c = 0; c < cols; c++) {
+                grid[r][c] = lines.get(r).charAt(c) == '#';
+            }
+        }
+        return grid;
+    }
 }

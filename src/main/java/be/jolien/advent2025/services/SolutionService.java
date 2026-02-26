@@ -24,6 +24,8 @@ public class SolutionService {
     private final PositionProvider positionProvider;
     private final MachineProvider machineProvider;
     private final DeviceProvider deviceProvider;
+    private final RegionProvider regionProvider;
+    private final PresentShapeProvider presentShapeProvider;
 
     SolutionService(DataProvider dataProvider,
                     ListParser listParser,
@@ -34,7 +36,9 @@ public class SolutionService {
                     RangeParser rangeParser,
                     PositionProvider positionProvider,
                     MachineProvider machineProvider,
-                    DeviceProvider deviceProvider) {
+                    DeviceProvider deviceProvider,
+                    PresentShapeProvider presentShapeProvider,
+                    RegionProvider regionProvider) {
         this.dataProvider = dataProvider;
         this.listParser = listParser;
         this.idChecker = idChecker;
@@ -45,6 +49,8 @@ public class SolutionService {
         this.positionProvider = positionProvider;
         this.machineProvider = machineProvider;
         this.deviceProvider = deviceProvider;
+        this.regionProvider = regionProvider;
+        this.presentShapeProvider = presentShapeProvider;
     }
 
     public int getSolutionDayOnePartOne(){
@@ -347,5 +353,13 @@ public class SolutionService {
         var deviceService = new DeviceService();
 
         return deviceService.findAmountPathsVisitedDacAndFft(devices);
+    }
+
+    public long getSolutionDayTwelvePartOne(){
+        var regions = regionProvider.provideRegions(12);
+        var presentShapes = presentShapeProvider.providePresentShapes(12);
+        var regionService = new RegionService();
+
+        return regionService.countFittingRegions(regions, presentShapes);
     }
 }
